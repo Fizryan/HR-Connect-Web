@@ -1,12 +1,18 @@
 "use client";
-import { queryKeys } from "@/lib/query-keys";
-
-import { ApiError } from "@/types/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Edit, MoreHorizontal, Power, PowerOff, Trash2 } from "lucide-react";
 
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, Edit, Trash2, Power, PowerOff } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Table,
@@ -16,17 +22,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { User } from "../types";
+import { queryKeys } from "@/lib/query-keys";
+import type { ApiError } from "@/types/api";
 import { UserApi } from "../services/user-api";
+import type { User } from "../types";
 
 interface UserTableProps {
   users: User[];
@@ -60,25 +59,41 @@ export function UserTable({ users, onEdit, onDelete, token }: UserTableProps) {
       <Table>
         <TableHeader className="bg-muted/30">
           <TableRow className="hover:bg-transparent border-b-border/50">
-            <TableHead className="font-semibold text-muted-foreground">User</TableHead>
-            <TableHead className="font-semibold text-muted-foreground">Role</TableHead>
-            <TableHead className="font-semibold text-muted-foreground">Status</TableHead>
-            <TableHead className="text-right font-semibold text-muted-foreground">Actions</TableHead>
+            <TableHead className="font-semibold text-muted-foreground">
+              User
+            </TableHead>
+            <TableHead className="font-semibold text-muted-foreground">
+              Role
+            </TableHead>
+            <TableHead className="font-semibold text-muted-foreground">
+              Status
+            </TableHead>
+            <TableHead className="text-right font-semibold text-muted-foreground">
+              Actions
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
+              <TableCell
+                colSpan={4}
+                className="h-32 text-center text-muted-foreground"
+              >
                 <div className="flex flex-col items-center justify-center gap-1">
                   <span className="font-medium">No users found.</span>
-                  <span className="text-sm opacity-70">Add a new employee to get started.</span>
+                  <span className="text-sm opacity-70">
+                    Add a new employee to get started.
+                  </span>
                 </div>
               </TableCell>
             </TableRow>
           ) : (
             users.map((user) => (
-              <TableRow key={user.id} className="group transition-colors hover:bg-muted/40 border-b-border/50">
+              <TableRow
+                key={user.id}
+                className="group transition-colors hover:bg-muted/40 border-b-border/50"
+              >
                 <TableCell>
                   <div className="flex items-center gap-4 py-1">
                     <div className="h-11 w-11 rounded-full bg-gradient-to-tr from-primary/20 to-primary/5 text-primary flex items-center justify-center font-bold overflow-hidden border border-primary/20 shadow-sm">
@@ -96,8 +111,12 @@ export function UserTable({ users, onEdit, onDelete, token }: UserTableProps) {
                       )}
                     </div>
                     <div>
-                      <p className="font-semibold text-sm sm:text-base">{user.data.firstName} {user.data.lastName}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground">{user.data.email}</p>
+                      <p className="font-semibold text-sm sm:text-base">
+                        {user.data.firstName} {user.data.lastName}
+                      </p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        {user.data.email}
+                      </p>
                     </div>
                   </div>
                 </TableCell>
@@ -122,20 +141,36 @@ export function UserTable({ users, onEdit, onDelete, token }: UserTableProps) {
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-9 w-9 p-0 rounded-full opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        className="h-9 w-9 p-0 rounded-full opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity"
+                      >
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[180px] rounded-xl shadow-lg">
-                      <DropdownMenuLabel className="font-normal text-xs text-muted-foreground">Actions</DropdownMenuLabel>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-[180px] rounded-xl shadow-lg"
+                    >
+                      <DropdownMenuLabel className="font-normal text-xs text-muted-foreground">
+                        Actions
+                      </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => onEdit(user)} className="cursor-pointer rounded-lg">
+                      <DropdownMenuItem
+                        onClick={() => onEdit(user)}
+                        className="cursor-pointer rounded-lg"
+                      >
                         <Edit className="mr-2 h-4 w-4 text-muted-foreground" />
                         Edit User
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => toggleStatusMutation.mutate({ id: user.id, isActive: user.isActive })}
+                      <DropdownMenuItem
+                        onClick={() =>
+                          toggleStatusMutation.mutate({
+                            id: user.id,
+                            isActive: user.isActive,
+                          })
+                        }
                         className="cursor-pointer rounded-lg"
                       >
                         {user.isActive ? (
@@ -151,7 +186,7 @@ export function UserTable({ users, onEdit, onDelete, token }: UserTableProps) {
                         )}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => onDelete(user)}
                         className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-lg"
                       >

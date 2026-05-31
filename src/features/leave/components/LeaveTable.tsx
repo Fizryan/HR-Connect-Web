@@ -1,12 +1,28 @@
 "use client";
-import { queryKeys } from "@/lib/query-keys";
-
-import { ApiError } from "@/types/api";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle, XCircle, Clock, CalendarDays, Loader2 } from "lucide-react";
+import { format } from "date-fns";
+import {
+  CalendarDays,
+  CheckCircle,
+  Clock,
+  Loader2,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
+import { queryKeys } from "@/lib/query-keys";
+import type { ApiError } from "@/types/api";
 
+const formatDate = (dateValue: string | undefined) => {
+  if (!dateValue) return "";
+  const num = Number(dateValue);
+  if (!isNaN(num) && num > 100000000) {
+    return format(new Date(num * 1000), "MMM d, yyyy");
+  }
+  return dateValue;
+};
+
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -15,9 +31,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { LeaveRequest } from "../types";
 import { LeaveApi } from "../services/leave-api";
+import type { LeaveRequest } from "../types";
 
 interface LeaveTableProps {
   leaves: LeaveRequest[];
@@ -26,7 +41,12 @@ interface LeaveTableProps {
   onReject?: (id: string) => void;
 }
 
-export function LeaveTable({ leaves, token, isApprover = false, onReject }: LeaveTableProps) {
+export function LeaveTable({
+  leaves,
+  token,
+  isApprover = false,
+  onReject,
+}: LeaveTableProps) {
   const queryClient = useQueryClient();
 
   const approveMutation = useMutation({
@@ -78,13 +98,20 @@ export function LeaveTable({ leaves, token, isApprover = false, onReject }: Leav
             <TableHead className="font-semibold">Date Range</TableHead>
             <TableHead className="font-semibold">Description</TableHead>
             <TableHead className="font-semibold">Status</TableHead>
-            {isApprover && <TableHead className="text-right font-semibold">Actions</TableHead>}
+            {isApprover && (
+              <TableHead className="text-right font-semibold">
+                Actions
+              </TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
           {leaves.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={isApprover ? 5 : 4} className="h-32 text-center text-muted-foreground">
+              <TableCell
+                colSpan={isApprover ? 5 : 4}
+                className="h-32 text-center text-muted-foreground"
+              >
                 <div className="flex flex-col items-center justify-center gap-1">
                   <span className="font-medium">No leave requests found.</span>
                 </div>
@@ -92,39 +119,49 @@ export function LeaveTable({ leaves, token, isApprover = false, onReject }: Leav
             </TableRow>
           ) : (
             leaves.map((leave) => (
-              <TableRow key={leave.id} className="group transition-colors hover:bg-muted/40 border-b-border/50">
+              <TableRow
+                key={leave.id}
+                className="group transition-colors hover:bg-muted/40 border-b-border/50"
+              >
                 <TableCell>
-                  <span className="font-medium capitalize text-sm">{leave.data.type} Leave</span>
+                  <span className="font-medium capitalize text-sm">
+                    {leave.data.type} Leave
+                  </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CalendarDays className="w-4 h-4 opacity-70" />
-                    <span>{leave.data.startDate} &mdash; {leave.data.endDate}</span>
+                    <span>
+                      {formatDate(leave.data.startDate)} &mdash;{" "}
+                      {formatDate(leave.data.endDate)}
+                    </span>
                   </div>
                 </TableCell>
                 <TableCell className="max-w-[200px] truncate text-sm">
                   {leave.data.description}
                 </TableCell>
-                <TableCell>
-                  {getStatusBadge(leave.status)}
-                </TableCell>
+                <TableCell>{getStatusBadge(leave.status)}</TableCell>
                 {isApprover && (
                   <TableCell className="text-right">
                     {leave.status.toLowerCase() === "pending" ? (
                       <div className="flex justify-end gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
+                        <Button
+                          size="sm"
+                          variant="outline"
                           className="h-8 border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-emerald-950/30 dark:border-emerald-900 dark:hover:bg-emerald-900/50"
                           onClick={() => approveMutation.mutate(leave.id)}
                           disabled={approveMutation.isPending}
                         >
-                          {approveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-1" />}
+                          {approveMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                          )}
                           Approve
                         </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
+                        <Button
+                          size="sm"
+                          variant="outline"
                           className="h-8 border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:bg-rose-950/30 dark:border-rose-900 dark:hover:bg-rose-900/50"
                           onClick={() => onReject && onReject(leave.id)}
                         >
@@ -133,7 +170,9 @@ export function LeaveTable({ leaves, token, isApprover = false, onReject }: Leav
                         </Button>
                       </div>
                     ) : (
-                      <span className="text-xs text-muted-foreground italic">Processed</span>
+                      <span className="text-xs text-muted-foreground italic">
+                        Processed
+                      </span>
                     )}
                   </TableCell>
                 )}

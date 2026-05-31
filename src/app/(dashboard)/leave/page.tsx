@@ -1,25 +1,24 @@
 "use client";
-import { queryKeys } from "@/lib/query-keys";
-
-
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { CalendarOff, Loader2, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { Plus, CalendarOff, Loader2 } from "lucide-react";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LeaveTable } from "@/features/leave/components/LeaveTable";
 import { LeaveFormDialog } from "@/features/leave/components/LeaveFormDialog";
+import { LeaveTable } from "@/features/leave/components/LeaveTable";
 import { RejectDialog } from "@/features/leave/components/RejectDialog";
 import { LeaveApi } from "@/features/leave/services/leave-api";
+import { queryKeys } from "@/lib/query-keys";
 
 export default function LeavePage() {
   const { data: session } = useSession();
   const token = session?.accessToken as string;
   const userRole = session?.user?.role?.toLowerCase() || "staff";
-  
-  const isApprover = ["admin", "director", "manager", "supervisor"].includes(userRole);
+
+  const isApprover = ["admin", "director", "manager", "supervisor"].includes(
+    userRole,
+  );
   const isAdmin = userRole === "admin" || userRole === "director";
 
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -67,7 +66,10 @@ export default function LeavePage() {
             Manage time-off requests, vacations, and sick leaves in one place.
           </p>
         </div>
-        <Button onClick={() => setIsFormOpen(true)} className="shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all rounded-xl h-11 px-6">
+        <Button
+          onClick={() => setIsFormOpen(true)}
+          className="shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all rounded-xl h-11 px-6"
+        >
           <Plus className="w-5 h-5 mr-2" />
           Request Leave
         </Button>
@@ -75,11 +77,17 @@ export default function LeavePage() {
 
       <Tabs defaultValue="my-leaves" className="space-y-6">
         <TabsList className="bg-card border shadow-sm p-1">
-          <TabsTrigger value="my-leaves" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6">
+          <TabsTrigger
+            value="my-leaves"
+            className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6"
+          >
             My Leaves
           </TabsTrigger>
           {isApprover && (
-            <TabsTrigger value="pending" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6">
+            <TabsTrigger
+              value="pending"
+              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6"
+            >
               Pending Approvals
               {pendingLeaves && pendingLeaves.length > 0 && (
                 <span className="ml-2 bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
@@ -89,23 +97,32 @@ export default function LeavePage() {
             </TabsTrigger>
           )}
           {isAdmin && (
-            <TabsTrigger value="all-leaves" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6">
+            <TabsTrigger
+              value="all-leaves"
+              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6"
+            >
               All Leaves
             </TabsTrigger>
           )}
         </TabsList>
 
         <TabsContent value="my-leaves" className="space-y-4">
-          {loadingMy ? <LoadingState /> : <LeaveTable leaves={myLeaves || []} token={token} />}
+          {loadingMy ? (
+            <LoadingState />
+          ) : (
+            <LeaveTable leaves={myLeaves || []} token={token} />
+          )}
         </TabsContent>
 
         {isApprover && (
           <TabsContent value="pending" className="space-y-4">
-            {loadingPending ? <LoadingState /> : (
-              <LeaveTable 
-                leaves={pendingLeaves || []} 
-                token={token} 
-                isApprover={true} 
+            {loadingPending ? (
+              <LoadingState />
+            ) : (
+              <LeaveTable
+                leaves={pendingLeaves || []}
+                token={token}
+                isApprover={true}
                 onReject={(id) => setRejectId(id)}
               />
             )}
@@ -114,22 +131,26 @@ export default function LeavePage() {
 
         {isAdmin && (
           <TabsContent value="all-leaves" className="space-y-4">
-            {loadingAll ? <LoadingState /> : <LeaveTable leaves={allLeaves || []} token={token} />}
+            {loadingAll ? (
+              <LoadingState />
+            ) : (
+              <LeaveTable leaves={allLeaves || []} token={token} />
+            )}
           </TabsContent>
         )}
       </Tabs>
 
       {/* Dialogs */}
-      <LeaveFormDialog 
-        open={isFormOpen} 
-        onOpenChange={setIsFormOpen} 
+      <LeaveFormDialog
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
         token={token}
       />
-      
-      <RejectDialog 
-        open={!!rejectId} 
-        onOpenChange={(v) => !v && setRejectId(null)} 
-        leaveId={rejectId} 
+
+      <RejectDialog
+        open={!!rejectId}
+        onOpenChange={(v) => !v && setRejectId(null)}
+        leaveId={rejectId}
         token={token}
       />
     </div>

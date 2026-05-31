@@ -32,7 +32,6 @@ export function Background() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

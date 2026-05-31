@@ -1,25 +1,24 @@
 "use client";
-import { queryKeys } from "@/lib/query-keys";
-
-
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Loader2, Plane, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { Plus, Plane, Loader2 } from "lucide-react";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TripTable } from "@/features/trip/components/TripTable";
-import { TripFormDialog } from "@/features/trip/components/TripFormDialog";
 import { RejectTripDialog } from "@/features/trip/components/RejectTripDialog";
+import { TripFormDialog } from "@/features/trip/components/TripFormDialog";
+import { TripTable } from "@/features/trip/components/TripTable";
 import { TripApi } from "@/features/trip/services/trip-api";
+import { queryKeys } from "@/lib/query-keys";
 
 export default function TripPage() {
   const { data: session } = useSession();
   const token = session?.accessToken as string;
   const userRole = session?.user?.role?.toLowerCase() || "staff";
-  
-  const isApprover = ["admin", "director", "manager", "supervisor"].includes(userRole);
+
+  const isApprover = ["admin", "director", "manager", "supervisor"].includes(
+    userRole,
+  );
   const isAdmin = userRole === "admin" || userRole === "director";
 
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -66,7 +65,10 @@ export default function TripPage() {
             Manage corporate travel, client visits, and training requests.
           </p>
         </div>
-        <Button onClick={() => setIsFormOpen(true)} className="shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all rounded-xl h-11 px-6">
+        <Button
+          onClick={() => setIsFormOpen(true)}
+          className="shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all rounded-xl h-11 px-6"
+        >
           <Plus className="w-5 h-5 mr-2" />
           Request Trip
         </Button>
@@ -74,11 +76,17 @@ export default function TripPage() {
 
       <Tabs defaultValue="my-trips" className="space-y-6">
         <TabsList className="bg-card border shadow-sm p-1">
-          <TabsTrigger value="my-trips" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6">
+          <TabsTrigger
+            value="my-trips"
+            className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6"
+          >
             My Trips
           </TabsTrigger>
           {isApprover && (
-            <TabsTrigger value="pending" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6">
+            <TabsTrigger
+              value="pending"
+              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6"
+            >
               Pending Approvals
               {pendingTrips && pendingTrips.length > 0 && (
                 <span className="ml-2 bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
@@ -88,23 +96,32 @@ export default function TripPage() {
             </TabsTrigger>
           )}
           {isAdmin && (
-            <TabsTrigger value="all-trips" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6">
+            <TabsTrigger
+              value="all-trips"
+              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6"
+            >
               All Trips
             </TabsTrigger>
           )}
         </TabsList>
 
         <TabsContent value="my-trips" className="space-y-4">
-          {loadingMy ? <LoadingState /> : <TripTable trips={myTrips || []} token={token} />}
+          {loadingMy ? (
+            <LoadingState />
+          ) : (
+            <TripTable trips={myTrips || []} token={token} />
+          )}
         </TabsContent>
 
         {isApprover && (
           <TabsContent value="pending" className="space-y-4">
-            {loadingPending ? <LoadingState /> : (
-              <TripTable 
-                trips={pendingTrips || []} 
-                token={token} 
-                isApprover={true} 
+            {loadingPending ? (
+              <LoadingState />
+            ) : (
+              <TripTable
+                trips={pendingTrips || []}
+                token={token}
+                isApprover={true}
                 onReject={(id) => setRejectId(id)}
               />
             )}
@@ -113,22 +130,26 @@ export default function TripPage() {
 
         {isAdmin && (
           <TabsContent value="all-trips" className="space-y-4">
-            {loadingAll ? <LoadingState /> : <TripTable trips={allTrips || []} token={token} />}
+            {loadingAll ? (
+              <LoadingState />
+            ) : (
+              <TripTable trips={allTrips || []} token={token} />
+            )}
           </TabsContent>
         )}
       </Tabs>
 
       {/* Dialogs */}
-      <TripFormDialog 
-        open={isFormOpen} 
-        onOpenChange={setIsFormOpen} 
+      <TripFormDialog
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
         token={token}
       />
-      
-      <RejectTripDialog 
-        open={!!rejectId} 
-        onOpenChange={(v) => !v && setRejectId(null)} 
-        tripId={rejectId} 
+
+      <RejectTripDialog
+        open={!!rejectId}
+        onOpenChange={(v) => !v && setRejectId(null)}
+        tripId={rejectId}
         token={token}
       />
     </div>

@@ -1,12 +1,8 @@
 "use client";
-import { queryKeys } from "@/lib/query-keys";
-
-import { ApiError } from "@/types/api";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -17,9 +13,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-
-import { User } from "../types";
+import { queryKeys } from "@/lib/query-keys";
+import type { ApiError } from "@/types/api";
 import { UserApi } from "../services/user-api";
+import type { User } from "../types";
 
 interface DeleteConfirmDialogProps {
   user: User | null;
@@ -28,7 +25,12 @@ interface DeleteConfirmDialogProps {
   token: string;
 }
 
-export function DeleteConfirmDialog({ user, open, onOpenChange, token }: DeleteConfirmDialogProps) {
+export function DeleteConfirmDialog({
+  user,
+  open,
+  onOpenChange,
+  token,
+}: DeleteConfirmDialogProps) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -61,13 +63,17 @@ export function DeleteConfirmDialog({ user, open, onOpenChange, token }: DeleteC
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={mutation.isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={mutation.isPending}>
+            Cancel
+          </AlertDialogCancel>
           <Button
             variant="destructive"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >
-            {mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {mutation.isPending && (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            )}
             Delete Account
           </Button>
         </AlertDialogFooter>

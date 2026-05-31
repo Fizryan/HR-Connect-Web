@@ -1,26 +1,40 @@
 "use client";
-import { queryKeys } from "@/lib/query-keys";
-
-import { ApiError } from "@/types/api";
-
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { queryKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
+import type { ApiError } from "@/types/api";
 
 import { LeaveApi } from "../services/leave-api";
-import { LeaveFormValues, leaveFormSchema } from "../types";
+import { type LeaveFormValues, leaveFormSchema } from "../types";
 
 interface LeaveFormDialogProps {
   open: boolean;
@@ -28,7 +42,11 @@ interface LeaveFormDialogProps {
   token: string;
 }
 
-export function LeaveFormDialog({ open, onOpenChange, token }: LeaveFormDialogProps) {
+export function LeaveFormDialog({
+  open,
+  onOpenChange,
+  token,
+}: LeaveFormDialogProps) {
   const queryClient = useQueryClient();
 
   const form = useForm<LeaveFormValues>({
@@ -43,8 +61,8 @@ export function LeaveFormDialog({ open, onOpenChange, token }: LeaveFormDialogPr
     mutationFn: async (values: LeaveFormValues) => {
       const apiPayload = {
         type: values.type,
-        startDate: format(values.startDate, "yyyy-MM-dd"),
-        endDate: format(values.endDate, "yyyy-MM-dd"),
+        startDate: Math.floor(values.startDate.getTime() / 1000).toString(),
+        endDate: Math.floor(values.endDate.getTime() / 1000).toString(),
         description: values.description,
       };
       await LeaveApi.createLeave(apiPayload, token);
@@ -58,7 +76,9 @@ export function LeaveFormDialog({ open, onOpenChange, token }: LeaveFormDialogPr
       onOpenChange(false);
     },
     onError: (error: ApiError) => {
-      toast.error(error?.response?.data?.message || "Failed to submit leave request");
+      toast.error(
+        error?.response?.data?.message || "Failed to submit leave request",
+      );
     },
   });
 
@@ -72,31 +92,33 @@ export function LeaveFormDialog({ open, onOpenChange, token }: LeaveFormDialogPr
         <DialogHeader>
           <DialogTitle>Request Leave</DialogTitle>
           <DialogDescription>
-            Submit a new time-off request. Your manager will be notified for approval.
+            Submit a new time-off request. Your manager will be notified for
+            approval.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 py-4">
-          
           <div className="space-y-2">
             <Label>Leave Type</Label>
-            <Select 
-              value={form.watch("type") || ""} 
+            <Select
+              value={form.watch("type") || ""}
               onValueChange={(val) => form.setValue("type", val as any)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select type of leave" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="annual">Annual Leave</SelectItem>
+                <SelectItem value="casual">Casual Leave</SelectItem>
                 <SelectItem value="sick">Sick Leave</SelectItem>
                 <SelectItem value="maternity">Maternity Leave</SelectItem>
                 <SelectItem value="paternity">Paternity Leave</SelectItem>
-                <SelectItem value="unpaid">Unpaid Leave</SelectItem>
+                <SelectItem value="other">Other Leave</SelectItem>
               </SelectContent>
             </Select>
             {form.formState.errors.type && (
-              <p className="text-xs text-destructive">{form.formState.errors.type.message}</p>
+              <p className="text-xs text-destructive">
+                {form.formState.errors.type.message}
+              </p>
             )}
           </div>
 
@@ -109,23 +131,31 @@ export function LeaveFormDialog({ open, onOpenChange, token }: LeaveFormDialogPr
                     variant={"outline"}
                     className={cn(
                       "w-full justify-start text-left font-normal",
-                      !form.watch("startDate") && "text-muted-foreground"
+                      !form.watch("startDate") && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {form.watch("startDate") ? format(form.watch("startDate"), "PPP") : <span>Pick a date</span>}
+                    {form.watch("startDate") ? (
+                      format(form.watch("startDate"), "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
                     selected={form.watch("startDate")}
-                    onSelect={(date) => form.setValue("startDate", date as Date)}
+                    onSelect={(date) =>
+                      form.setValue("startDate", date as Date)
+                    }
                   />
                 </PopoverContent>
               </Popover>
               {form.formState.errors.startDate && (
-                <p className="text-xs text-destructive">{form.formState.errors.startDate.message}</p>
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.startDate.message}
+                </p>
               )}
             </div>
 
@@ -137,11 +167,15 @@ export function LeaveFormDialog({ open, onOpenChange, token }: LeaveFormDialogPr
                     variant={"outline"}
                     className={cn(
                       "w-full justify-start text-left font-normal",
-                      !form.watch("endDate") && "text-muted-foreground"
+                      !form.watch("endDate") && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {form.watch("endDate") ? format(form.watch("endDate"), "PPP") : <span>Pick a date</span>}
+                    {form.watch("endDate") ? (
+                      format(form.watch("endDate"), "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -153,29 +187,39 @@ export function LeaveFormDialog({ open, onOpenChange, token }: LeaveFormDialogPr
                 </PopoverContent>
               </Popover>
               {form.formState.errors.endDate && (
-                <p className="text-xs text-destructive">{form.formState.errors.endDate.message}</p>
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.endDate.message}
+                </p>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label>Description / Reason</Label>
-            <Textarea 
-              placeholder="Please provide details about your leave..." 
+            <Textarea
+              placeholder="Please provide details about your leave..."
               className="resize-none"
               {...form.register("description")}
             />
             {form.formState.errors.description && (
-              <p className="text-xs text-destructive">{form.formState.errors.description.message}</p>
+              <p className="text-xs text-destructive">
+                {form.formState.errors.description.message}
+              </p>
             )}
           </div>
 
           <div className="pt-4 flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {mutation.isPending && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
               Submit Request
             </Button>
           </div>

@@ -1,6 +1,6 @@
-import CredentialsProvider from "next-auth/providers/credentials";
-import type { NextAuthOptions } from "next-auth";
 import axios from "axios";
+import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:9001";
 
@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -41,10 +41,13 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const loginResponse = await axios.post(`${API_URL}/api/v1/auth/login`, {
-            email: credentials.email,
-            password: credentials.password,
-          });
+          const loginResponse = await axios.post(
+            `${API_URL}/api/v1/auth/login`,
+            {
+              email: credentials.email,
+              password: credentials.password,
+            },
+          );
 
           const { accessToken, refreshToken, expTime } = loginResponse.data;
 
@@ -71,11 +74,11 @@ export const authOptions: NextAuthOptions = {
           console.error("Authorize error:", error);
           return null;
         }
-      }
-    })
+      },
+    }),
   ],
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -109,26 +112,30 @@ export const authOptions: NextAuthOptions = {
       } as any;
       session.accessToken = token.accessToken;
       session.error = token.error;
-      
+
       return session;
-    }
+    },
   },
   events: {
     async signOut({ token }) {
       if (token?.accessToken) {
         try {
-          await axios.post(`${API_URL}/api/v1/auth/logout`, {}, {
-            headers: {
-              Authorization: `Bearer ${token.accessToken}`,
+          await axios.post(
+            `${API_URL}/api/v1/auth/logout`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token.accessToken}`,
+              },
             },
-          });
+          );
         } catch (error) {
           console.error("Error logging out from backend:", error);
         }
       }
-    }
+    },
   },
   session: {
-    strategy: "jwt"
-  }
+    strategy: "jwt",
+  },
 };

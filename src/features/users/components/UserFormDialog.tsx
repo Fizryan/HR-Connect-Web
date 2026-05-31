@@ -1,23 +1,37 @@
 "use client";
-import { queryKeys } from "@/lib/query-keys";
-
-import { ApiError } from "@/types/api";
-
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-import { User, CreateUserFormValues, createUserSchema, userSchema, UserFormValues } from "../types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { queryKeys } from "@/lib/query-keys";
+import type { ApiError } from "@/types/api";
 import { UserApi } from "../services/user-api";
+import {
+  type CreateUserFormValues,
+  createUserSchema,
+  type User,
+  type UserFormValues,
+  userSchema,
+} from "../types";
 
 interface UserFormDialogProps {
   open: boolean;
@@ -26,9 +40,15 @@ interface UserFormDialogProps {
   token: string;
 }
 
-export function UserFormDialog({ open, onOpenChange, user, token }: UserFormDialogProps) {
+export function UserFormDialog({
+  open,
+  onOpenChange,
+  user,
+  token,
+}: UserFormDialogProps) {
   const isEditing = !!user;
   const queryClient = useQueryClient();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<CreateUserFormValues | UserFormValues>({
     resolver: zodResolver(isEditing ? userSchema : createUserSchema),
@@ -70,7 +90,9 @@ export function UserFormDialog({ open, onOpenChange, user, token }: UserFormDial
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-      toast.success(isEditing ? "User updated successfully" : "User created successfully");
+      toast.success(
+        isEditing ? "User updated successfully" : "User created successfully",
+      );
       onOpenChange(false);
     },
     onError: (error: ApiError) => {
@@ -86,9 +108,13 @@ export function UserFormDialog({ open, onOpenChange, user, token }: UserFormDial
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit User" : "Create New User"}</DialogTitle>
+          <DialogTitle>
+            {isEditing ? "Edit User" : "Create New User"}
+          </DialogTitle>
           <DialogDescription>
-            {isEditing ? "Update the user's details." : "Enter the details to create a new user account."}
+            {isEditing
+              ? "Update the user's details."
+              : "Enter the details to create a new user account."}
           </DialogDescription>
         </DialogHeader>
 
@@ -98,30 +124,41 @@ export function UserFormDialog({ open, onOpenChange, user, token }: UserFormDial
               <Label htmlFor="firstName">First Name</Label>
               <Input id="firstName" {...form.register("firstName")} />
               {form.formState.errors.firstName && (
-                <p className="text-xs text-destructive">{form.formState.errors.firstName.message as string}</p>
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.firstName.message as string}
+                </p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
               <Input id="lastName" {...form.register("lastName")} />
               {form.formState.errors.lastName && (
-                <p className="text-xs text-destructive">{form.formState.errors.lastName.message as string}</p>
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.lastName.message as string}
+                </p>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" {...form.register("email")} />
+            <Input
+              id="email"
+              type="email"
+              autoComplete="off"
+              {...form.register("email")}
+            />
             {form.formState.errors.email && (
-              <p className="text-xs text-destructive">{form.formState.errors.email.message as string}</p>
+              <p className="text-xs text-destructive">
+                {form.formState.errors.email.message as string}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
             <Label>Role</Label>
-            <Select 
-              value={form.watch("role") || ""} 
+            <Select
+              value={form.watch("role") || ""}
               onValueChange={(val) => form.setValue("role", val as any)}
             >
               <SelectTrigger>
@@ -136,26 +173,56 @@ export function UserFormDialog({ open, onOpenChange, user, token }: UserFormDial
               </SelectContent>
             </Select>
             {form.formState.errors.role && (
-              <p className="text-xs text-destructive">{form.formState.errors.role.message as string}</p>
+              <p className="text-xs text-destructive">
+                {form.formState.errors.role.message as string}
+              </p>
             )}
           </div>
 
           {!isEditing && (
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" {...form.register("password" as any)} />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  {...form.register("password" as any)}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
               {(form.formState.errors as any).password && (
-                <p className="text-xs text-destructive">{(form.formState.errors as any).password.message as string}</p>
+                <p className="text-xs text-destructive">
+                  {(form.formState.errors as any).password.message as string}
+                </p>
               )}
             </div>
           )}
 
           <div className="pt-4 flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {mutation.isPending && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
               Save Changes
             </Button>
           </div>

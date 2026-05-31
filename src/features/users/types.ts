@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-export const RoleEnum = z.enum(["admin", "director", "manager", "supervisor", "staff"]);
+export const RoleEnum = z.enum([
+  "admin",
+  "director",
+  "manager",
+  "supervisor",
+  "staff",
+]);
 export type Role = z.infer<typeof RoleEnum>;
 
 export interface UserData {
@@ -31,14 +37,18 @@ export const createUserSchema = userSchema.extend({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export const changePasswordSchema = z.object({
-  oldPassword: z.string().min(1, "Old password is required"),
-  newPassword: z.string().min(6, "New password must be at least 6 characters"),
-  confirmPassword: z.string().min(6, "Confirm password is required"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+export const changePasswordSchema = z
+  .object({
+    oldPassword: z.string().min(1, "Old password is required"),
+    newPassword: z
+      .string()
+      .min(6, "New password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Confirm password is required"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export type UserFormValues = z.infer<typeof userSchema>;
 export type CreateUserFormValues = z.infer<typeof createUserSchema>;

@@ -1,8 +1,8 @@
 export const ROUTES = {
   AUTH: {
-    LOGIN: '/login',
+    LOGIN: "/login",
   },
   DASHBOARD: {
-    HOME: '/dashboard',
+    HOME: "/dashboard",
   },
 } as const;

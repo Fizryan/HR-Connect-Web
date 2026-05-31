@@ -1,18 +1,20 @@
 "use client";
-import { queryKeys } from "@/lib/query-keys";
-
-import { ApiError } from "@/types/api";
-
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Calendar, Loader2, QrCode, LogIn, LogOut, CheckCircle2, Clock } from "lucide-react";
-import { toast } from "sonner";
+import {
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  LogIn,
+  LogOut,
+  QrCode,
+} from "lucide-react";
 import Image from "next/image";
-
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -21,7 +23,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AttendanceApi } from "@/features/attendance/services/attendance-api";
+import { queryKeys } from "@/lib/query-keys";
+import type { ApiError } from "@/types/api";
 
 export default function AttendancePage() {
   const { data: session } = useSession();
@@ -29,7 +34,9 @@ export default function AttendancePage() {
   const userRole = session?.user?.role?.toLowerCase() || "staff";
   const queryClient = useQueryClient();
 
-  const isApprover = ["admin", "director", "manager", "supervisor"].includes(userRole);
+  const isApprover = ["admin", "director", "manager", "supervisor"].includes(
+    userRole,
+  );
   const { data: myAttendance, isLoading: loadingMy } = useQuery({
     queryKey: queryKeys.attendance.my,
     queryFn: () => AttendanceApi.getMyAttendance(token),
@@ -43,7 +50,8 @@ export default function AttendancePage() {
   });
 
   const checkInMutation = useMutation({
-    mutationFn: async () => await AttendanceApi.checkIn("web-manual-checkin", token),
+    mutationFn: async () =>
+      await AttendanceApi.checkIn("web-manual-checkin", token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.attendance.my });
       queryClient.invalidateQueries({ queryKey: queryKeys.attendance.all });
@@ -55,7 +63,8 @@ export default function AttendancePage() {
   });
 
   const checkOutMutation = useMutation({
-    mutationFn: async () => await AttendanceApi.checkOut("web-manual-checkout", token),
+    mutationFn: async () =>
+      await AttendanceApi.checkOut("web-manual-checkout", token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.attendance.my });
       queryClient.invalidateQueries({ queryKey: queryKeys.attendance.all });
@@ -74,7 +83,9 @@ export default function AttendancePage() {
       toast.success("QR Code generated for today");
     },
     onError: (error: ApiError) => {
-      toast.error(error?.response?.data?.message || "Failed to generate QR Code");
+      toast.error(
+        error?.response?.data?.message || "Failed to generate QR Code",
+      );
     },
   });
 
@@ -91,7 +102,9 @@ export default function AttendancePage() {
     <div className="flex h-64 items-center justify-center rounded-2xl border bg-card text-card-foreground shadow-sm border-dashed border-border/60">
       <div className="flex flex-col items-center gap-3 text-muted-foreground">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="font-medium animate-pulse">Loading attendance records...</p>
+        <p className="font-medium animate-pulse">
+          Loading attendance records...
+        </p>
       </div>
     </div>
   );
@@ -114,15 +127,24 @@ export default function AttendancePage() {
 
       <Tabs defaultValue="my-attendance" className="space-y-6">
         <TabsList className="bg-card border shadow-sm p-1">
-          <TabsTrigger value="my-attendance" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6">
+          <TabsTrigger
+            value="my-attendance"
+            className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6"
+          >
             My Attendance
           </TabsTrigger>
           {isApprover && (
             <>
-              <TabsTrigger value="all-attendance" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6">
+              <TabsTrigger
+                value="all-attendance"
+                className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6"
+              >
                 All Attendance
               </TabsTrigger>
-              <TabsTrigger value="qr-generator" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6">
+              <TabsTrigger
+                value="qr-generator"
+                className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md px-6"
+              >
                 QR Generator
               </TabsTrigger>
             </>
@@ -135,27 +157,36 @@ export default function AttendancePage() {
               <div className="text-center space-y-2">
                 <h3 className="text-xl font-semibold">Web Check-In System</h3>
                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                  Use the buttons below to log your daily attendance. Ensure you are connected to the company network.
+                  Use the buttons below to log your daily attendance. Ensure you
+                  are connected to the company network.
                 </p>
               </div>
               <div className="flex gap-4">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-14 px-8 shadow-lg shadow-emerald-600/20"
                   onClick={() => checkInMutation.mutate()}
                   disabled={checkInMutation.isPending}
                 >
-                  {checkInMutation.isPending ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <LogIn className="w-5 h-5 mr-2" />}
+                  {checkInMutation.isPending ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <LogIn className="w-5 h-5 mr-2" />
+                  )}
                   Check In
                 </Button>
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   variant="outline"
                   className="rounded-xl h-14 px-8 text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 dark:border-rose-900/50 dark:hover:bg-rose-950/30"
                   onClick={() => checkOutMutation.mutate()}
                   disabled={checkOutMutation.isPending}
                 >
-                  {checkOutMutation.isPending ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <LogOut className="w-5 h-5 mr-2" />}
+                  {checkOutMutation.isPending ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <LogOut className="w-5 h-5 mr-2" />
+                  )}
                   Check Out
                 </Button>
               </div>
@@ -170,13 +201,20 @@ export default function AttendancePage() {
               </div>
               <div className="flex-1 overflow-auto max-h-[300px]">
                 {loadingMy ? (
-                  <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+                  <div className="flex justify-center p-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  </div>
                 ) : myAttendance?.length === 0 ? (
-                  <div className="p-8 text-center text-muted-foreground text-sm">No recent attendance records.</div>
+                  <div className="p-8 text-center text-muted-foreground text-sm">
+                    No recent attendance records.
+                  </div>
                 ) : (
                   <ul className="divide-y divide-border/50">
                     {myAttendance?.map((record, idx) => (
-                      <li key={idx} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors">
+                      <li
+                        key={idx}
+                        className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors"
+                      >
                         <div className="flex items-center gap-3">
                           <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                           <span className="text-sm font-medium">Scanned</span>
@@ -201,31 +239,48 @@ export default function AttendancePage() {
                   <TableHeader className="bg-muted/30">
                     <TableRow className="hover:bg-transparent border-b-border/50">
                       <TableHead className="font-semibold">User ID</TableHead>
-                      <TableHead className="font-semibold">Total Scans</TableHead>
-                      <TableHead className="font-semibold">Latest Scan Time</TableHead>
+                      <TableHead className="font-semibold">
+                        Total Scans
+                      </TableHead>
+                      <TableHead className="font-semibold">
+                        Latest Scan Time
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loadingAll ? (
                       <TableRow>
-                        <TableCell colSpan={3} className="h-32 text-center text-muted-foreground">
+                        <TableCell
+                          colSpan={3}
+                          className="h-32 text-center text-muted-foreground"
+                        >
                           <Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" />
                         </TableCell>
                       </TableRow>
                     ) : allAttendance?.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={3} className="h-32 text-center text-muted-foreground">
+                        <TableCell
+                          colSpan={3}
+                          className="h-32 text-center text-muted-foreground"
+                        >
                           No attendance records found.
                         </TableCell>
                       </TableRow>
                     ) : (
                       allAttendance?.map((userAtt, idx) => {
-                        const sortedLogs = [...userAtt.attendance].sort((a, b) => Number(b.scannedAt) - Number(a.scannedAt));
+                        const sortedLogs = [...userAtt.attendance].sort(
+                          (a, b) => Number(b.scannedAt) - Number(a.scannedAt),
+                        );
                         const latestScan = sortedLogs[0]?.scannedAt;
 
                         return (
-                          <TableRow key={idx} className="border-b-border/50 hover:bg-muted/40">
-                            <TableCell className="font-mono text-sm">{userAtt.userId}</TableCell>
+                          <TableRow
+                            key={idx}
+                            className="border-b-border/50 hover:bg-muted/40"
+                          >
+                            <TableCell className="font-mono text-sm">
+                              {userAtt.userId}
+                            </TableCell>
                             <TableCell>
                               <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
                                 {userAtt.attendance.length} logs
@@ -249,9 +304,12 @@ export default function AttendancePage() {
                   <QrCode className="w-8 h-8" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold tracking-tight">Today's QR Code</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    Today's QR Code
+                  </h2>
                   <p className="text-muted-foreground mt-2">
-                    Generate a fresh QR Code for employees to scan via the mobile application.
+                    Generate a fresh QR Code for employees to scan via the
+                    mobile application.
                   </p>
                 </div>
 
@@ -262,8 +320,12 @@ export default function AttendancePage() {
                     <div className="space-y-4 animate-in zoom-in-95 duration-300">
                       <div className="p-4 bg-white rounded-xl shadow-sm border inline-block">
                         {/* We use next/image to render base64, assuming backend returns base64 prefix or raw base64 */}
-                        <Image 
-                          src={qrCode.startsWith('data:image') ? qrCode : `data:image/png;base64,${qrCode}`} 
+                        <Image
+                          src={
+                            qrCode.startsWith("data:image")
+                              ? qrCode
+                              : `data:image/png;base64,${qrCode}`
+                          }
                           alt="Attendance QR Code"
                           width={200}
                           height={200}
@@ -281,8 +343,8 @@ export default function AttendancePage() {
                   )}
                 </div>
 
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="w-full h-12 text-md rounded-xl"
                   onClick={() => generateQrMutation.mutate()}
                   disabled={generateQrMutation.isPending}

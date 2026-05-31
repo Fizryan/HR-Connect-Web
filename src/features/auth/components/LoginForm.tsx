@@ -1,20 +1,17 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-
 import LogoIcon from "@/assets/logo_icon_rounded.png";
-
-import { loginSchema, LoginFormValues } from "../types";
-import { signIn } from "next-auth/react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { type LoginFormValues, loginSchema } from "../types";
 
 export function LoginForm() {
   const router = useRouter();
@@ -48,7 +45,7 @@ export function LoginForm() {
       const err = error as Error;
       setErrorMsg(
         err.message ||
-          "Failed to authenticate. Please verify your credentials."
+          "Failed to authenticate. Please verify your credentials.",
       );
     }
   };
@@ -69,7 +66,7 @@ export function LoginForm() {
               priority
             />
           </div>
-          
+
           <div className="space-y-1.5">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               HR-Connect

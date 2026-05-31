@@ -9,7 +9,9 @@ export interface DashboardMetrics {
 
 export const DashboardApi = {
   getMetrics: async (token: string): Promise<DashboardMetrics> => {
-    const response = await apiClient.get('/dashboard', { headers: getAuthHeaders(token) });
+    const response = await apiClient.get("/dashboard", {
+      headers: getAuthHeaders(token),
+    });
     return response.data;
   },
 };
