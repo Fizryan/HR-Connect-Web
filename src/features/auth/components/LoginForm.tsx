@@ -10,7 +10,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import LogoIcon from "@/assets/logo_icon_rounded.png";
 
 import { loginSchema, LoginFormValues } from "../types";
-import { AuthApi } from "../services/auth-api";
+import { signIn } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,11 +32,22 @@ export function LoginForm() {
   const onSubmit = async (values: LoginFormValues) => {
     try {
       setErrorMsg(null);
-      await AuthApi.login(values);
-      router.push("/dashboard");
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: values.email,
+        password: values.password,
+      });
+
+      if (res?.error) {
+        setErrorMsg("Failed to authenticate. Please verify your credentials.");
+      } else if (res?.ok) {
+        router.push("/dashboard");
+        router.refresh();
+      }
     } catch (error: any) {
+      const err = error as Error;
       setErrorMsg(
-        error.message ||
+        err.message ||
           "Failed to authenticate. Please verify your credentials."
       );
     }
@@ -46,18 +57,8 @@ export function LoginForm() {
 
   return (
     <div className="w-full max-w-[420px] mx-auto">
-      {/* PERBAIKAN ELEVASI: 
-        Menggunakan bg-card/95 agar form lebih terang dan menonjol 
-        dari background hitam pekat, namun tetap mempertahankan efek kaca (blur).
-      */}
       <div className="relative overflow-hidden bg-card/95 text-card-foreground backdrop-blur-2xl px-8 py-10 rounded-[2.5rem] shadow-2xl border border-border/80">
-        
-        {/* Header Section */}
         <div className="flex flex-col items-center text-center space-y-5 mb-8">
-          {/* PERBAIKAN LOGO: 
-            Menghilangkan padding buatan. Gambar sekarang diinstruksikan 
-            untuk mengisi penuh (w-full h-full) kontainer 80x80 piksel.
-          */}
           <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl overflow-hidden border border-border/50 bg-background/50 shadow-sm">
             <Image
               src={LogoIcon}
@@ -79,7 +80,6 @@ export function LoginForm() {
           </div>
         </div>
 
-        {/* Form Section */}
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <div className="space-y-2.5">
             <Label
