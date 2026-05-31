@@ -64,7 +64,12 @@ export default function SettingsPage() {
         firstName: currentUser.data.firstName,
         lastName: currentUser.data.lastName,
         email: currentUser.data.email,
-        role: currentUser.data.role as string,
+        role: currentUser.data.role as
+          | "staff"
+          | "manager"
+          | "supervisor"
+          | "admin"
+          | "director",
       });
     }
   }, [currentUser, profileForm]);

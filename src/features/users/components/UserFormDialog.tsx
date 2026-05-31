@@ -218,9 +218,17 @@ export function UserFormDialog({
                   )}
                 </Button>
               </div>
-              {form.formState.errors.password && (
+              {(form.formState.errors as Record<string, { message?: string }>)
+                .password && (
                 <p className="text-xs text-destructive">
-                  {form.formState.errors.password.message as string}
+                  {
+                    (
+                      form.formState.errors as Record<
+                        string,
+                        { message?: string }
+                      >
+                    ).password?.message
+                  }
                 </p>
               )}
             </div>

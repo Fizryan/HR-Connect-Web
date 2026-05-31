@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { NextAuthOptions } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:9001";
@@ -108,8 +109,8 @@ export const authOptions: NextAuthOptions = {
         firstName: token.firstName,
         lastName: token.lastName,
         avatarUrl: token.avatarUrl,
-        role: token.role,
-      } as DefaultSession["user"];
+        role: token.role as string,
+      };
       session.accessToken = token.accessToken;
       session.error = token.error;
 
