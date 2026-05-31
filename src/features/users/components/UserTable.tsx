@@ -1,8 +1,7 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Edit, MoreHorizontal, Power, PowerOff, Trash2 } from "lucide-react";
-
-import { useState } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,10 +97,13 @@ export function UserTable({ users, onEdit, onDelete, token }: UserTableProps) {
                   <div className="flex items-center gap-4 py-1">
                     <div className="h-11 w-11 rounded-full bg-gradient-to-tr from-primary/20 to-primary/5 text-primary flex items-center justify-center font-bold overflow-hidden border border-primary/20 shadow-sm">
                       {user.data.avatarUrl ? (
-                        <img
+                        <Image
                           src={user.data.avatarUrl}
                           alt={user.data.firstName}
+                          width={44}
+                          height={44}
                           className="h-full w-full object-cover"
+                          unoptimized={true}
                         />
                       ) : (
                         <span className="text-sm">

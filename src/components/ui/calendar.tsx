@@ -136,7 +136,7 @@ function Calendar({
           ),
           hidden: cn("invisible", defaultClassNames.hidden),
           ...classNames,
-        } as any
+        } as Partial<Record<string, string>>
       }
       components={{
         Root: ({ className, rootRef, ...props }) => {

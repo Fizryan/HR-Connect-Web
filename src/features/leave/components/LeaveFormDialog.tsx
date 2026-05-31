@@ -102,7 +102,17 @@ export function LeaveFormDialog({
             <Label>Leave Type</Label>
             <Select
               value={form.watch("type") || ""}
-              onValueChange={(val) => form.setValue("type", val as any)}
+              onValueChange={(val) =>
+                form.setValue(
+                  "type",
+                  val as
+                    | "casual"
+                    | "sick"
+                    | "maternity"
+                    | "paternity"
+                    | "other",
+                )
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select type of leave" />

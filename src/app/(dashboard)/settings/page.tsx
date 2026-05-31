@@ -64,7 +64,7 @@ export default function SettingsPage() {
         firstName: currentUser.data.firstName,
         lastName: currentUser.data.lastName,
         email: currentUser.data.email,
-        role: currentUser.data.role as any,
+        role: currentUser.data.role as string,
       });
     }
   }, [currentUser, profileForm]);
@@ -351,6 +351,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
               <button
+                type="button"
                 onClick={() => setTheme("light")}
                 className={`p-6 border-2 rounded-xl flex flex-col items-center gap-3 transition-all ${
                   theme === "light"
@@ -365,6 +366,7 @@ export default function SettingsPage() {
               </button>
 
               <button
+                type="button"
                 onClick={() => setTheme("dark")}
                 className={`p-6 border-2 rounded-xl flex flex-col items-center gap-3 transition-all ${
                   theme === "dark"
@@ -379,6 +381,7 @@ export default function SettingsPage() {
               </button>
 
               <button
+                type="button"
                 onClick={() => setTheme("system")}
                 className={`p-6 border-2 rounded-xl flex flex-col items-center gap-3 transition-all ${
                   theme === "system"

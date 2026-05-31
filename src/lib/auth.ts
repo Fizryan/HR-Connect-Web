@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:9001";
 
-async function refreshAccessToken(token: any) {
+async function refreshAccessToken(token: JWT) {
   try {
     const response = await axios.post(`${API_URL}/api/v1/auth/refresh`, {
       refreshToken: token.refreshToken,
@@ -109,7 +109,7 @@ export const authOptions: NextAuthOptions = {
         lastName: token.lastName,
         avatarUrl: token.avatarUrl,
         role: token.role,
-      } as any;
+      } as DefaultSession["user"];
       session.accessToken = token.accessToken;
       session.error = token.error;
 

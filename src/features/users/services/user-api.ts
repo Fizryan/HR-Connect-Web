@@ -19,7 +19,7 @@ export const UserApi = {
   createUser: async (
     data: CreateUserFormValues,
     token: string,
-  ): Promise<any> => {
+  ): Promise<unknown> => {
     const payload = {
       data: {
         firstName: data.firstName,
@@ -30,7 +30,7 @@ export const UserApi = {
       },
       password: data.password,
     };
-    const response = await apiClient.post<any>("/users/register", payload, {
+    const response = await apiClient.post<unknown>("/users/register", payload, {
       headers: getAuthHeaders(token),
     });
     return response.data;

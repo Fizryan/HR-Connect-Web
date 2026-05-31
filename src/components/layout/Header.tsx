@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  HelpCircle,
-  Info,
-  LogOut,
-  Menu,
-  Settings,
-  User,
-} from "lucide-react";
+import { HelpCircle, Info, LogOut, Menu, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -39,16 +32,24 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-background/80 backdrop-blur-md px-6 shadow-sm">
       <div className="flex items-center gap-4">
-        <button type="button" className="md:hidden text-muted-foreground hover:text-foreground">
+        <button
+          type="button"
+          className="md:hidden text-muted-foreground hover:text-foreground"
+        >
           <Menu className="h-6 w-6" />
         </button>
-        <h2 className="md:hidden text-lg font-bold tracking-tight text-primary">HR Connect</h2>
+        <h2 className="md:hidden text-lg font-bold tracking-tight text-primary">
+          HR Connect
+        </h2>
       </div>
 
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+            <button
+              type="button"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            >
               <User className="h-5 w-5" />
             </button>
           </DropdownMenuTrigger>

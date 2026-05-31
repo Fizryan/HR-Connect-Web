@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
   Activity,
-  Calendar as CalendarIcon,
   CalendarOff,
   Clock,
   Loader2,
@@ -23,9 +22,11 @@ export default function DashboardPage() {
   const token = session?.accessToken as string;
   const user = session?.user;
 
+  const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
+    setMounted(true);
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -69,7 +70,9 @@ export default function DashboardPage() {
             </div>
             <div className="pb-2">
               <h2 className="text-sm font-semibold text-primary tracking-wider uppercase mb-1">
-                {format(currentTime, "EEEE, MMMM do, yyyy")}
+                {mounted
+                  ? format(currentTime, "EEEE, MMMM do, yyyy")
+                  : "Loading date..."}
               </h2>
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
                 {getGreeting()},{" "}
@@ -84,8 +87,8 @@ export default function DashboardPage() {
           <div className="hidden lg:flex items-center gap-4 bg-background/60 backdrop-blur-md px-6 py-4 rounded-2xl border border-border/50 shadow-sm self-center md:self-auto mb-2">
             <Clock className="w-8 h-8 text-primary" />
             <div>
-              <p className="text-2xl font-bold font-mono tracking-tight">
-                {format(currentTime, "HH:mm:ss")}
+              <p className="text-2xl font-bold font-mono tracking-tight min-w-[120px]">
+                {mounted ? format(currentTime, "HH:mm:ss") : "--:--:--"}
               </p>
               <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">
                 Local Time

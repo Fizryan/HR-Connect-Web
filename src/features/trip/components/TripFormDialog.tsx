@@ -101,7 +101,17 @@ export function TripFormDialog({
             <Label>Trip Type</Label>
             <Select
               value={form.watch("type") || ""}
-              onValueChange={(val) => form.setValue("type", val as any)}
+              onValueChange={(val) =>
+                form.setValue(
+                  "type",
+                  val as
+                    | "meeting"
+                    | "travel"
+                    | "conference"
+                    | "seminar"
+                    | "other",
+                )
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select type of trip" />

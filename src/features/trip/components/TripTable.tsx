@@ -17,7 +17,7 @@ import type { ApiError } from "@/types/api";
 const formatDate = (dateValue: string | undefined) => {
   if (!dateValue) return "";
   const num = Number(dateValue);
-  if (!isNaN(num) && num > 100000000) {
+  if (!Number.isNaN(num) && num > 100000000) {
     return format(new Date(num * 1000), "MMM d, yyyy");
   }
   return dateValue;
@@ -171,7 +171,7 @@ export function TripTable({
                           size="sm"
                           variant="outline"
                           className="h-8 border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:bg-rose-950/30 dark:border-rose-900 dark:hover:bg-rose-900/50"
-                          onClick={() => onReject && onReject(trip.id)}
+                          onClick={() => onReject?.(trip.id)}
                         >
                           <XCircle className="w-4 h-4 mr-1" />
                           Reject

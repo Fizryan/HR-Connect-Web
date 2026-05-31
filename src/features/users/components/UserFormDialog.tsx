@@ -67,7 +67,12 @@ export function UserFormDialog({
         firstName: user.data.firstName,
         lastName: user.data.lastName,
         email: user.data.email,
-        role: user.data.role as any,
+        role: user.data.role as
+          | "staff"
+          | "manager"
+          | "supervisor"
+          | "admin"
+          | "director",
       });
     } else if (!open) {
       form.reset({
@@ -81,7 +86,7 @@ export function UserFormDialog({
   }, [user, open, form]);
 
   const mutation = useMutation({
-    mutationFn: async (values: any) => {
+    mutationFn: async (values: UserFormValues) => {
       if (isEditing) {
         await UserApi.updateUser(user.id, values as UserFormValues, token);
       } else {
@@ -100,7 +105,7 @@ export function UserFormDialog({
     },
   });
 
-  const onSubmit = (values: any) => {
+  const onSubmit = (values: UserFormValues) => {
     mutation.mutate(values);
   };
 
@@ -159,7 +164,17 @@ export function UserFormDialog({
             <Label>Role</Label>
             <Select
               value={form.watch("role") || ""}
-              onValueChange={(val) => form.setValue("role", val as any)}
+              onValueChange={(val) =>
+                form.setValue(
+                  "role",
+                  val as
+                    | "staff"
+                    | "manager"
+                    | "supervisor"
+                    | "admin"
+                    | "director",
+                )
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a role" />
@@ -187,7 +202,7 @@ export function UserFormDialog({
                   id="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
-                  {...form.register("password" as any)}
+                  {...form.register("password")}
                 />
                 <Button
                   type="button"
@@ -203,9 +218,9 @@ export function UserFormDialog({
                   )}
                 </Button>
               </div>
-              {(form.formState.errors as any).password && (
+              {form.formState.errors.password && (
                 <p className="text-xs text-destructive">
-                  {(form.formState.errors as any).password.message as string}
+                  {form.formState.errors.password.message as string}
                 </p>
               )}
             </div>

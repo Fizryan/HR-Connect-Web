@@ -41,7 +41,7 @@ export function LoginForm() {
         router.push("/dashboard");
         router.refresh();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const err = error as Error;
       setErrorMsg(
         err.message ||
@@ -106,12 +106,12 @@ export function LoginForm() {
               >
                 Password
               </Label>
-              <a
-                href="#"
+              <Link
+                href="/forgot-password"
                 className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
             <div className="relative">
               <Input

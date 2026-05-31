@@ -98,17 +98,6 @@ export default function AttendancePage() {
     }
   };
 
-  const LoadingState = () => (
-    <div className="flex h-64 items-center justify-center rounded-2xl border bg-card text-card-foreground shadow-sm border-dashed border-border/60">
-      <div className="flex flex-col items-center gap-3 text-muted-foreground">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="font-medium animate-pulse">
-          Loading attendance records...
-        </p>
-      </div>
-    </div>
-  );
-
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 py-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-6 rounded-3xl shadow-sm border border-border/50 bg-gradient-to-br from-card to-muted/20">
@@ -210,9 +199,9 @@ export default function AttendancePage() {
                   </div>
                 ) : (
                   <ul className="divide-y divide-border/50">
-                    {myAttendance?.map((record, idx) => (
+                    {myAttendance?.map((record) => (
                       <li
-                        key={idx}
+                        key={record.scannedAt}
                         className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors"
                       >
                         <div className="flex items-center gap-3">
@@ -267,7 +256,7 @@ export default function AttendancePage() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      allAttendance?.map((userAtt, idx) => {
+                      allAttendance?.map((userAtt) => {
                         const sortedLogs = [...userAtt.attendance].sort(
                           (a, b) => Number(b.scannedAt) - Number(a.scannedAt),
                         );
@@ -275,7 +264,7 @@ export default function AttendancePage() {
 
                         return (
                           <TableRow
-                            key={idx}
+                            key={userAtt.userId}
                             className="border-b-border/50 hover:bg-muted/40"
                           >
                             <TableCell className="font-mono text-sm">

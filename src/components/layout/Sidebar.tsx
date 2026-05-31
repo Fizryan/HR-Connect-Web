@@ -5,10 +5,10 @@ import {
   CalendarOff,
   ChevronLeft,
   ChevronRight,
+  Hexagon,
   LayoutDashboard,
   Plane,
   Users,
-  Hexagon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -36,6 +36,7 @@ export function Sidebar() {
       )}
     >
       <button
+        type="button"
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3 top-6 bg-primary text-primary-foreground rounded-full p-1 shadow-md hover:bg-primary/90 transition-colors z-10"
       >

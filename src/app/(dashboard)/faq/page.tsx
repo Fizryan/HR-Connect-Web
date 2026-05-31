@@ -58,7 +58,7 @@ export default function FAQPage() {
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
             <AccordionItem
-              key={index}
+              key={faq.question}
               value={`item-${index}`}
               className="border-b-border/50"
             >

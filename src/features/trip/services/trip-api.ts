@@ -42,7 +42,9 @@ export const TripApi = {
       headers: getAuthHeaders(token),
     });
     const requests = response.data.requests || [];
-    return requests.filter((r: any) => r.status.toLowerCase() === "pending");
+    return requests.filter(
+      (r: { status: string }) => r.status.toLowerCase() === "pending",
+    );
   },
 
   approveTrip: async (id: string, token: string): Promise<void> => {

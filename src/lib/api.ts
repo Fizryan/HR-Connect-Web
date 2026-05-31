@@ -31,7 +31,7 @@ apiClient.interceptors.response.use(
           } else {
             signOut({ callbackUrl: "/login" });
           }
-        } catch (err) {
+        } catch (_err) {
           import("next-auth/react").then(({ signOut }) => {
             signOut({ callbackUrl: "/login" });
           });

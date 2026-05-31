@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
@@ -25,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="id" className="h-full antialiased" suppressHydrationWarning>
       <body
-        className={`${geistSans.className} min-h-full flex flex-col bg-background text-foreground transition-colors duration-300`}
+        className={`${geistSans.className} antialiased selection:bg-primary/20 selection:text-primary min-h-screen bg-background text-foreground`}
       >
         <ThemeProvider
           attribute="class"
